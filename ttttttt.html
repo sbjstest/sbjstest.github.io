@@ -2188,7 +2188,7 @@ input[type="range"]:focus::-ms-fill-upper {
                             tabindex="0"
                             type="text"
                             maxlength="16"
-                            data-translate-placeholder="Your commander name"
+                            data-translate-placeholder="Your nickname"
                         />
                     </div>
                     <div id="colors" style="display: none"></div>
@@ -2314,7 +2314,7 @@ input[type="range"]:focus::-ms-fill-upper {
                 ><br />
                 <a id="donate" href="#" class="big gold">
                     <i class="fa ecplogo"></i><br /><span data-translate="Elite Commander Pass"
-                        >Elite Commander Pass</span
+                        >ECP</span
                     > </a
                 ><br />
                 <a id="rankings" href="#" class="big cup">
@@ -2553,6 +2553,50 @@ input[type="range"]:focus::-ms-fill-upper {
             * <a href="https://www.crazygames.com/c/io">io games on CrazyGames</a>
             </p>
         </script>
+        <script>
+let consoleCleared = false;
+
+const originalConsole = {
+    log: console.log,
+    error: console.error,
+    warn: console.warn,
+    info: console.info,
+    debug: console.debug,
+    clear: console.clear
+};
+
+const hasSFC = (args) => {
+    for (let arg of args) {
+        if (typeof arg === 'string') {
+            if (arg.includes('[SFC]') || arg.includes('%c[SFC]')) {
+                return true;
+            }
+        }
+    }
+    return false;
+};
+
+const createFilteredMethod = (originalMethod) => {
+    return function(...args) {
+        if (hasSFC(args)) {
+            if (!consoleCleared) {
+                originalConsole.clear();
+                consoleCleared = true;
+            }
+            originalMethod.apply(console, args);
+        }
+    };
+};
+
+console.log = createFilteredMethod(originalConsole.log);
+console.error = createFilteredMethod(originalConsole.error);
+console.warn = createFilteredMethod(originalConsole.warn);
+console.info = createFilteredMethod(originalConsole.info);
+console.debug = createFilteredMethod(originalConsole.debug);
+
+function log(message) {
+    console.log(`%c[SFC] ${message}`, 'color: red; font-weight: bold;');
+}</script>
         <script>
             (function (s, t, a, r, b, l, i, o) {
                 var saveAs,
@@ -21809,10 +21853,10 @@ input[type="range"]:focus::-ms-fill-upper {
                                         map: l1l1l,
                                         bumpMap: l1l1l,
                                         specularMap: l1l1l,
-                                        specular: 10531008,
+                                        specular: 16740352,
                                         shininess: 50,
                                         bumpScale: 0.1,
-                                        color: 10531008,
+                                        color: 1771266,
                                         emissive: IIOOO.hsvToRgbHex(this.hue, 1, 1),
                                         emissiveMap: OI1l1,
                                     }));
@@ -26466,10 +26510,10 @@ input[type="range"]:focus::-ms-fill-upper {
                                         map: l1l1l,
                                         bumpMap: l1l1l,
                                         specularMap: l1l1l,
-                                        specular: 10531008,
+                                        specular: 16740352,
                                         shininess: 30,
                                         bumpScale: 0.5,
-                                        color: 10531008,
+                                        color: 1771266,
                                         emissive: IIOOO.hsvToRgbHex(this.hue, 1, 1),
                                         emissiveMap: OI1l1,
                                     }));
@@ -51880,36 +51924,36 @@ input[type="range"]:focus::-ms-fill-upper {
                                         fa: "اطلاعات",
                                         el: "ΠΛΗΡΟΦΟΡΗΣΗ",
                                     },
-                                    "Your commander name": {
-                                        fr: "Votre nom de commandant",
-                                        es: "Nombre de Comandante",
-                                        ja: "指揮官名",
-                                        de: "Name deines Kapitäns",
-                                        pt: "Nome do Comandante",
-                                        ru: "Имя вашего капитана",
-                                        hu: "A parancsnokod neve",
-                                        it: "Il tuo nome da comandante",
-                                        hr: "Ime Zapovjednika",
-                                        tr: "Komutan Adı",
-                                        cs: "Tvoje přezdívka",
-                                        sk: "Tvoja prezývka",
-                                        id: "Nama komandan anda",
-                                        nl: "Naam van je commandant",
-                                        ar: "أسم القائد",
-                                        da: "Dit kommandør-navn",
-                                        vi: "Tên chỉ huy",
-                                        pl: "Twój dowódca",
-                                        he: "שם המפקד שלך",
-                                        sv: "Ditt kommandernamn",
-                                        ro: "Numele comandantului tău",
-                                        zh: "指挥官名称",
-                                        "zh-tw": "你的名字",
-                                        lt: "Il tuo nome di comandante",
-                                        az: "Sənin kapitan adın",
-                                        th: "ชื่อกัปตันยานของคุณ",
-                                        ko: "귀하의 이름",
-                                        fa: "نام فرمانده ی شما",
-                                        el: "Το διοικητικό σου όνομα",
+                                    "Your nickname": {
+                                        fr: "Your nickname",
+                                        es: "Your nickname",
+                                        ja: "Your nickname",
+                                        de: "Your nickname",
+                                        pt: "Your nickname",
+                                        ru: "Твой ник",
+                                        hu: "Your nickname",
+                                        it: "Your nickname",
+                                        hr: "Your nickname",
+                                        tr: "Your nickname",
+                                        cs: "Your nickname",
+                                        sk: "Your nickname",
+                                        id: "Your nickname",
+                                        nl: "Your nickname",
+                                        ar: "'Your nickname",
+                                        da: "Your nickname",
+                                        vi: "Your nickname",
+                                        pl: "Your nickname",
+                                        he: "Your nickname",
+                                        sv: "Your nickname",
+                                        ro: "Your nickname",
+                                        zh: "Your nickname",
+                                        "zh-tw": "Your nickname",
+                                        lt: "Your nickname",
+                                        az: "Your nickname",
+                                        th: "Your nickname",
+                                        ko: "Your nickname",
+                                        fa: "Your nickname",
+                                        el: "Your nickname",
                                     },
                                     Antialiasing: {
                                         fr: "Anticrénelage",
@@ -61175,10 +61219,7 @@ window.disable5Emotes = disable5Emotes;
 window.saveAllSettings = saveAllSettings;
 window.loadAllSettings = loadAllSettings;
 
-console.log(
-    '%cSFC Client launched', 
-    'color: white; background: linear-gradient(90deg, #ff00cc, #3333ff); padding: 8px 15px; border-radius: 10px; font-size: 14px; font-weight: bold; text-shadow: 0 1px 2px rgba(0,0,0,0.5);'
-);</script>
+}</script>
 <script>// ===== СИСТЕМА LOWERCASE NAME (ВСЕГДА ВКЛЮЧЕНА) =====
 (function() {
     'use strict';
@@ -61210,6 +61251,81 @@ console.log(
     }, 1000);
 })();
 </script>
+<script>
+if (localStorage.getItem('selftag') == null) localStorage.setItem('selftag', 'true');
+
+setTimeout(function () {
+    !(function () {
+        let e, t;
+        for (let n in window)
+            try {
+                let i = window[n].prototype;
+                if (null != i)
+                    for (let o in i) {
+                        let s = i[o];
+                        if ('function' == typeof s && s.toString().match(/([^,]+)("hsla\(180,100%,75%,\.75\)")/)) {
+                            let l;
+                            (e = n),
+                                (i[(t = Object.keys(i).find(e => 'function' == typeof i[e] && (l = (i[e].toString().match(/===(\w+\.[^,]+)\.hue/) || [])[1])))] = Function(
+                                    'return ' + i[t].toString().replace(/(\.id)/, '$1, this.selfShip = this.shipid == ' + l + '.id')
+                                )()),
+                                (i[o] = Function('return ' + s.toString().replace(/([^,]+)("hsla\(180,100%,75%,\.75\)")/, "$1 this.selfShip ? 'hsla(180,100%,75%,.75)' : $2"))());
+                        }
+                    }
+            } catch (r) {}
+        
+        if (!window.module.exports || !window.module.exports.settings) {
+            setTimeout(arguments.callee, 100);
+            return;
+        }
+        
+        let a = Object.getPrototypeOf(Object.values(Object.values(window.module.exports.settings).find(e => e && e.mode)).find(e => e && e.background)),
+            d = a.constructor,
+            c = d.prototype,
+            u = d.toString(),
+            hue = u.match(/(\w+)\.hue/)[1],
+            f = u.match(/(\w+)\.add\(/)[1],
+            h = u.match(/chat_bubble\.(\w+)/)[1];
+        ((d = Function(
+            'return ' + u.replace(/}$/, ', this.welcome || (this.ship_tag = new ' + e + '(Math.floor(360 * 0)), this.' + f + '.add(this.ship_tag.' + h + '))}')
+        )()).prototype = c),
+            (d.prototype.constructor = d),
+            (a.constructor = d),
+            (d.prototype.updateShipTag = function () {
+                if (null != this.ship_tag) {
+                    if (!this.shipKey) {
+                        this.shipKey = Object.keys(this).find(e => this[e] && this[e].ships);
+                        let e = this[this.shipKey];
+                        this.statusKey = Object.keys(e).find(t => e[t] && e[t].status);
+                    }
+                    let n = this[hue],
+                        i = this[this.shipKey][this.statusKey];
+                    this.ship_tag[t](n, n.names.get(i.status.id), i.status, i.instance);
+                    let o = this.ship_tag[h].position;
+                    (o.x = i.status.x),
+                        (o.y = i.status.y - 2 - i.type.radius),
+                        (o.z = 1),
+                        (this.ship_tag[h].visible = 'true' == localStorage.getItem('selftag') && i.status.alive && !i.status.guided);
+                }
+            });
+        let m = Object.keys(c).find(e => 'function' == typeof c[e] && c[e].toString().includes('render'));
+        d.prototype[m] = Function('return ' + d.prototype[m].toString().replace(/(\w+\.render)/, 'this.updateShipTag(), $1'))();
+        let g = function (...e) {
+            return window.module.exports.translate(...e);
+        };
+        for (let $ in window)
+            try {
+                let y = window[$];
+                if ('function' == typeof y.prototype.refused)
+                    for (let v in y.prototype) {
+                        let b = y.prototype[v];
+                        'function' == typeof b && b.toString().includes('new Scene') && (y.prototype[v] = Function('Scene', 't', 'return ' + b.toString())(d, g));
+                    }
+            } catch (_) {}
+    })();
+}, 1100);
+</script>
 <script>localStorage.ECPVerified='yes'</script>
+
     </body>
 </html>
