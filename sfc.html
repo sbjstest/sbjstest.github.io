@@ -61214,6 +61214,172 @@ window.disable5Emotes = disable5Emotes;
 window.saveAllSettings = saveAllSettings;
 window.loadAllSettings = loadAllSettings;
 
+// ===== TRAINING AIM ASSIST (mode.id === "welcome") =====
+const AIM_ASSIST_STORAGE_KEY = 'sfc_training_aim_assist_enabled';
+let trainingAimAssistEnabled = localStorage.getItem(AIM_ASSIST_STORAGE_KEY);
+trainingAimAssistEnabled = trainingAimAssistEnabled === null ? true : trainingAimAssistEnabled === 'true';
+
+function setTrainingAimAssistEnabled(value) {
+    trainingAimAssistEnabled = !!value;
+    localStorage.setItem(AIM_ASSIST_STORAGE_KEY, String(trainingAimAssistEnabled));
+}
+
+function getCurrentModeId() {
+    try {
+        const settingsObj = window?.module?.exports?.settings;
+        const modeContainer = settingsObj && Object.values(settingsObj).find((entry) => entry && entry.mode);
+        return modeContainer?.mode?.id || null;
+    } catch (_err) {
+        return null;
+    }
+}
+
+function collectObjects(root, maxDepth = 2) {
+    if (!root || typeof root !== 'object') return [];
+
+    const visited = new Set();
+    const queue = [{ node: root, depth: 0 }];
+    const objects = [];
+
+    while (queue.length) {
+        const { node, depth } = queue.shift();
+        if (!node || typeof node !== 'object' || visited.has(node)) continue;
+
+        visited.add(node);
+        objects.push(node);
+
+        if (depth >= maxDepth) continue;
+
+        for (const value of Object.values(node)) {
+            if (value && typeof value === 'object') {
+                queue.push({ node: value, depth: depth + 1 });
+            }
+        }
+    }
+
+    return objects;
+}
+
+function getNumericField(obj, keys) {
+    for (const key of keys) {
+        if (typeof obj[key] === 'number' && Number.isFinite(obj[key])) {
+            return obj[key];
+        }
+    }
+
+    return null;
+}
+
+function detectLocalShip(objects) {
+    for (const obj of objects) {
+        const x = getNumericField(obj, ['x', 'X', 'px', 'posX']);
+        const y = getNumericField(obj, ['y', 'Y', 'py', 'posY']);
+
+        if (x === null || y === null) continue;
+
+        const isLocal = obj.isLocalPlayer || obj.isMine || obj.me || obj.you || obj.self;
+        const hasAimFields = 'targetAngle' in obj || 'aimAngle' in obj || 'mouseX' in obj || 'mouseY' in obj;
+
+        if (isLocal || hasAimFields) {
+            return {
+                ref: obj,
+                x,
+                y,
+                team: obj.team ?? obj.teamId ?? null,
+            };
+        }
+    }
+
+    return null;
+}
+
+function detectEnemyShips(objects, localShip) {
+    const enemies = [];
+
+    for (const obj of objects) {
+        if (!obj || typeof obj !== 'object' || obj === localShip?.ref) continue;
+
+        const x = getNumericField(obj, ['x', 'X', 'px', 'posX']);
+        const y = getNumericField(obj, ['y', 'Y', 'py', 'posY']);
+
+        if (x === null || y === null) continue;
+
+        const isPlayerLike = ('name' in obj) || ('level' in obj) || ('ship' in obj) || ('shield' in obj);
+        if (!isPlayerLike) continue;
+
+        if (obj.dead || obj.destroyed || obj.isDead) continue;
+
+        const team = obj.team ?? obj.teamId ?? null;
+        if (localShip && localShip.team !== null && team !== null && localShip.team === team) continue;
+
+        enemies.push({ x, y });
+    }
+
+    return enemies;
+}
+
+function applyTrainingAim(localShipRef, selfX, selfY, targetX, targetY) {
+    const angle = Math.atan2(targetY - selfY, targetX - selfX);
+
+    if ('targetAngle' in localShipRef) localShipRef.targetAngle = angle;
+    if ('aimAngle' in localShipRef) localShipRef.aimAngle = angle;
+    if ('rotation' in localShipRef) localShipRef.rotation = angle;
+
+    if ('mouseX' in localShipRef) localShipRef.mouseX = targetX - selfX;
+    if ('mouseY' in localShipRef) localShipRef.mouseY = targetY - selfY;
+    if ('inputMouseX' in localShipRef) localShipRef.inputMouseX = targetX;
+    if ('inputMouseY' in localShipRef) localShipRef.inputMouseY = targetY;
+}
+
+function updateTrainingAimAssist() {
+    if (!trainingAimAssistEnabled || getCurrentModeId() !== 'welcome') return;
+
+    const settingsObj = window?.module?.exports?.settings;
+    if (!settingsObj) return;
+
+    const objects = collectObjects(settingsObj, 2);
+    const localShip = detectLocalShip(objects);
+    if (!localShip) return;
+
+    const enemies = detectEnemyShips(objects, localShip);
+    if (!enemies.length) return;
+
+    let nearestEnemy = null;
+    let nearestDistanceSq = Infinity;
+
+    for (const enemy of enemies) {
+        const dx = enemy.x - localShip.x;
+        const dy = enemy.y - localShip.y;
+        const distanceSq = dx * dx + dy * dy;
+
+        if (distanceSq < nearestDistanceSq) {
+            nearestDistanceSq = distanceSq;
+            nearestEnemy = enemy;
+        }
+    }
+
+    if (!nearestEnemy) return;
+
+    applyTrainingAim(localShip.ref, localShip.x, localShip.y, nearestEnemy.x, nearestEnemy.y);
+}
+
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'F8') {
+        setTrainingAimAssistEnabled(!trainingAimAssistEnabled);
+        console.log('[SFC] Training aim assist:', trainingAimAssistEnabled ? 'ON' : 'OFF');
+    }
+});
+
+setInterval(updateTrainingAimAssist, 60);
+window.__sfcTrainingAimAssist = {
+    get enabled() {
+        return trainingAimAssistEnabled;
+    },
+    set enabled(value) {
+        setTrainingAimAssistEnabled(value);
+    }
+};
+
 console.log(
     '%cSFC Client launched', 
     'color: white; background: linear-gradient(90deg, #ff00cc, #3333ff); padding: 8px 15px; border-radius: 10px; font-size: 14px; font-weight: bold; text-shadow: 0 1px 2px rgba(0,0,0,0.5);'
